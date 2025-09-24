@@ -4,6 +4,24 @@ def process_pengembalian(buku, mahasiswa):
     laporan = []
     
     def kembalikan_buku(nama, judul):
+        if nama not in mahasiswa:
+            return (judul, "Gagal", "Mahasiswa tidak terdaftar")
+
+
+        if judul not in buku:
+            return (judul, "Gagal", "Judul tidak ditemukan")
+
+        if judul in mahasiswa[nama].get("pinjaman", []):
+            mahasiswa[nama]["pinjaman"].remove(judul)
+            buku[judul]["stok"] += 1
+            if buku[judul]["status"] == "Kosong":
+                buku[judul]["status"] = "Tersedia"
+            return (judul, "Berhasil", None)
+        
+        
+    # 4. Jika tidak ada di daftar pinjaman
+        return (judul, "Gagal", "Tidak tercatat sebagai pinjaman")
+
         # 1. Validasi mahasiswa
         # TODO: melakukan pengecekan apakah nama mahasiswa ada dalam dictionary buku, kemudian
         #    return (judul, "Gagal", "Mahasiswa tidak terdaftar")
@@ -20,6 +38,7 @@ def process_pengembalian(buku, mahasiswa):
             # return (judul, "Berhasil", None)
 
         # 4. Jika tidak ada di daftar pinjaman
+    
         return (judul, "Gagal", "Tidak tercatat sebagai pinjaman")
 
     for nama, data in mahasiswa.items():
@@ -53,7 +72,7 @@ test_cases = [
         "mahasiswa": {"Budi": {"pinjaman": [], "ingin_kembali": ["basis data"]}}
     },
     {
-        "name": "3. Beberapa pengembalian campuran",
+        "name": "3. Beberapa pengembalian campuran (ada yang sukses & gagal)",
         "buku": {
             "struktur data": {"stok": 0, "status": "Kosong"},
             "logika matematika": {"stok": 1, "status": "Tersedia"}
@@ -68,7 +87,6 @@ test_cases = [
         "mahasiswa": {"Deni": {"pinjaman": ["pemrograman python"], "ingin_kembali": []}}
     }
 ]
-
 
 def print_result(result):
     print("=== Laporan Pengembalian ===")
